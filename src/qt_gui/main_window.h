@@ -43,6 +43,7 @@ public:
     bool showLabels;
     void StopGame();
     void RestartGame();
+    void InstallPkg();
 
 private Q_SLOTS:
     void ConfigureGuiFromSettings();
@@ -74,7 +75,6 @@ private:
     void SetLastUsedTheme();
     void SetLastIconSizeBullet();
     void SetUiIcons(bool isWhite);
-    void InstallPkg();
     void BootGame();
 #ifdef ENABLE_QT_GUI
     QString getLastEbootPath();
