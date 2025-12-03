@@ -36,6 +36,8 @@ int main(int argc, char* argv[]) {
     bool show_gui = false, has_game_argument = false;
     std::string game_path;
     std::vector<std::string> game_args{};
+    bool install_pkg_mode = false;
+    std::string pkg_path;
 
     // Map of argument strings to lambda functions
     std::unordered_map<std::string, std::function<void(int&)>> arg_map = {
@@ -83,6 +85,16 @@ int main(int argc, char* argv[]) {
                  exit(1);
              }
          }},
+        {"--install-pkg",
+         [&](int& i) {
+             if (i + 1 >= argc) {
+                 std::cerr << "Error: Missing argument for --install-pkg\n";
+                 exit(1);
+             }
+             install_pkg_mode = true;
+             pkg_path = argv[++i];
+         }},
+
         {"--patch", [&](int& i) { arg_map["-p"](i); }},
         {"-f",
          [&](int& i) {
@@ -170,6 +182,14 @@ int main(int argc, char* argv[]) {
     MainWindow* m_main_window = new MainWindow(nullptr);
     if ((has_command_line_argument && show_gui) || !has_command_line_argument) {
         m_main_window->Init();
+    }
+    // If launched with --install-pkg, trigger InstallPkg()
+    if (install_pkg_mode) {
+        m_main_window->show();
+        QTimer::singleShot(0, m_main_window, [m_main_window, pkg_path]() {
+            m_main_window->InstallPkg(QString::fromStdString(pkg_path));
+        });
+        return a.exec();
     }
 
     if (has_command_line_argument && !has_game_argument) {
